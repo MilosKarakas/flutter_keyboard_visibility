@@ -56,9 +56,9 @@
   }
 
   // Ignore keyboard notifications if engine's viewController is not current viewController.
-  if ([_engine.get() viewController] != self) {
-    return;
-  }
+  //if ([_engine.get() viewController] != self) {
+   // return;
+  //}
 
   CGRect keyboardFrame = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
   CGRect screenRect = [[UIScreen mainScreen] bounds];

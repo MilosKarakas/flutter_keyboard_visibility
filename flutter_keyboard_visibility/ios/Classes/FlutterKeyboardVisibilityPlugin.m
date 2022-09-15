@@ -38,8 +38,55 @@
     [center addObserver:self selector:@selector(didShow) name:UIKeyboardDidShowNotification object:nil];
     [center addObserver:self selector:@selector(willShow) name:UIKeyboardWillShowNotification object:nil];
 	[center addObserver:self selector:@selector(didHide) name:UIKeyboardWillHideNotification object:nil];
+	[center addObserver:self
+                 selector:@selector(keyboardWillChangeFrame:)
+                     name:UIKeyboardWillChangeFrameNotification
+                   object:nil];
 
     return self;
+}
+
+- (void)keyboardWillChangeFrame:(NSNotification*)notification {
+  NSDictionary* info = [notification userInfo];
+
+  // Ignore keyboard notifications related to other apps.
+  id isLocal = info[UIKeyboardIsLocalUserInfoKey];
+  if (isLocal && ![isLocal boolValue]) {
+    return;
+  }
+
+  // Ignore keyboard notifications if engine's viewController is not current viewController.
+  if ([_engine.get() viewController] != self) {
+    return;
+  }
+
+  CGRect keyboardFrame = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+  CGRect screenRect = [[UIScreen mainScreen] bounds];
+
+  // Get the animation duration
+  NSTimeInterval duration =
+      [[info objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+
+  // Considering the iPad's split keyboard, Flutter needs to check if the keyboard frame is present
+  // in the screen to see if the keyboard is visible.
+
+   double yOfFrame = keyboardFrame.origin.y;
+    NSLog(@"%f", yOfFrame);
+  if (keyboardFrame.origin.y > 0) {
+
+    NSLog(@"floating test %f", yOfFrame);
+    self.targetViewInsetBottom = 0;
+  } else if (CGRectIntersectsRect(keyboardFrame, screenRect)) {
+    CGFloat bottom = CGRectGetHeight(keyboardFrame);
+    CGFloat scale = [UIScreen mainScreen].scale;
+    // The keyboard is treated as an inset since we want to effectively reduce the window size by
+    // the keyboard height. The Dart side will compute a value accounting for the keyboard-consuming
+    // bottom padding.
+    self.targetViewInsetBottom = bottom * scale;
+  } else {
+    self.targetViewInsetBottom = 0;
+  }
+  [self startKeyBoardAnimation:duration];
 }
 
 - (void)didShow

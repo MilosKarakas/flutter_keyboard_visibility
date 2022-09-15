@@ -75,18 +75,18 @@
   if (keyboardFrame.origin.y > 0) {
 
     NSLog(@"floating test %f", yOfFrame);
-    self.targetViewInsetBottom = 0;
+    //self.targetViewInsetBottom = 0;
   } else if (CGRectIntersectsRect(keyboardFrame, screenRect)) {
     CGFloat bottom = CGRectGetHeight(keyboardFrame);
     CGFloat scale = [UIScreen mainScreen].scale;
     // The keyboard is treated as an inset since we want to effectively reduce the window size by
     // the keyboard height. The Dart side will compute a value accounting for the keyboard-consuming
     // bottom padding.
-    self.targetViewInsetBottom = bottom * scale;
+   // self.targetViewInsetBottom = bottom * scale;
   } else {
-    self.targetViewInsetBottom = 0;
+   // self.targetViewInsetBottom = 0;
   }
-  [self startKeyBoardAnimation:duration];
+ // [self startKeyBoardAnimation:duration];
 }
 
 - (void)didShow
